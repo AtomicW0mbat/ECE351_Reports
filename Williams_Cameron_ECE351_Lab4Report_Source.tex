@@ -1,0 +1,129 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Cameron Williams          %
+% ECE 351-51                %
+% Lab Number 3              %
+% 18 February 2020          %
+% Instructor Philip Hagen   %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[12pt]{article}
+
+% Language and font encoding
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{rotating}
+\usepackage{setspace}
+\usepackage{indentfirst}
+\usepackage{enumitem}
+\usepackage{appendix}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{listings}
+\usepackage{gensymb}
+\usepackage{amssymb}
+\usepackage[final]{pdfpages}
+
+% Sets page size and margins
+\usepackage[a4paper, margin=1in]{geometry}
+
+%Line Spacing
+\setstretch{1.5}
+
+%-------------------Begin Editing Here---------------------
+%Info for Title Page
+\title{System Step Response Using Convolution}
+\author{Cameron Williams\\ECE 351-51\\Lab Report 4}
+\date{18 February 2020}
+\begin{document}
+
+%Make a Title Page
+\vspace{\fill}
+\maketitle
+\vspace{\fill}
+\clearpage
+
+\newpage
+%Introduction
+\section{Introduction}
+    \par The objective of this lab is to become familiar with using convolution to compute a system's step response. To accomplish this, three provided transfer functions will be used in finding their respective step responses via the convolution function created in a previous lab. Additionally, the step responses will be calculated manually and plotted for comparison.
+\newpage
+
+%Methodology
+\section{Methodology}
+    \par I began by importing my convolution, step, and ramp functions created in previous labs. Using the appropriate functions, I created plots of the transfer functions provided. The equations for these transfer functions may be seen below and their plots may be seen in Figure 1 of the results section.
+    $$ h_1(t)=e^{2t}u(1-t) $$
+    $$ h_2(t)=u(t-2)-u(t-6) $$
+    $$ h_3(t)=cos(\omega_0t)u(t) $$
+    
+    \par Next, I plotted the step response of each of the provided transfer functions. Plots of the three step responses may be seen in Figure 2 of the Results section. I also created plots based on hand calculated step responses to the transfer functions. The calculations for each of the step responses may be seen in the Calculations section and a plot of the results for each may be seen in Figure 3 of the Results section.
+
+\newpage
+%Calculations
+\section{Calculations}
+\begin{align*}
+h_1(t)*u(t) &= e^{2t}u(1-t)*u(t) \\
+ &= \int_{-\infty}^{\infty} e^{2\tau}u(1-\tau)u(t-\tau)d\tau \\
+ &= \int_{-\infty}^{t} u(1-\tau)d\tau + \int_{-\infty}^{t} e^{2\tau}u(\tau - 1)d\tau \\
+ &= \int_{\infty}^{t} e^{2\tau}d\tau + \int_{-\infty}^{1} e^{2\tau}d\tau \\
+ &= \frac{1}{2}e^{2t}u(1-t)+\frac{1}{2}e^2u(t-1) 
+\end{align*}
+
+\begin{align*}
+h_2(t)*u(t) &= [u(t-2)-u(t-6)]*u(t) \\
+ &= \int_{-\infty}^{\infty} [u(\tau-2)-u(\tau-6)]u(t-\tau)d\tau \\
+ &= \int_{-\infty}^{t} u(\tau-2)-u(\tau-6)d\tau \\
+ &= r(t-2)-r(t-6)
+\end{align*}
+
+\begin{align*}
+h_3(t)*u(t) &= [cos(\omega_0t)u(t)]*u(t) \\
+ &= \int_{-\infty}^{\infty} [cos(\omega_0\tau)u(\tau)] u(t-\tau)d\tau \\
+ &= \int_{-\infty}^{t} cos(\omega_0\tau)u(\tau) d\tau \\
+ &= \int_{0}^{t} cos(\omega_0\tau) d\tau \\
+ &= \frac{1}{\omega_0}sin(\omega_0t)u(t) \\
+ &= \frac{1}{2\pi(.25)}sin(2\pi(.25)t)u(t)
+\end{align*}
+
+\newpage
+%Results
+\section{Results}
+    \begin{figure}[hbt!]
+        \centering
+        \includegraphics[width=\textwidth]{include/Figure_1.png}
+        \caption{Plots of transfer functions provided.}
+    \end{figure}
+    
+    \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth]{include/Figure_2.png}
+        \caption{Plots of step responses via my convolution function.}
+    \end{figure}
+    
+    \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth]{include/Figure_3.png}
+        \caption{Plots of calculated step responses.}
+    \end{figure}
+    
+    
+\newpage
+%Conclusion
+\section{Conclusion}
+    \par Creating the Python script for this lab was fairly straightforward. However, calculating the convolutions manually gave me some difficulty. I could use more practice with this.
+    
+\newpage
+%Questions
+\section*{Questions}
+
+\begin{enumerate}
+    \item Leave any feedback on the clarity of lab tasks, expectations, and deliverables.
+\end{enumerate}
+    \par The lab expectations were communicated clearly.
+    
+\end{document}
