@@ -1,0 +1,125 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Cameron Williams          %
+% ECE 351-51                %
+% Lab Number 5              %
+% 25 February 2020          %
+% Instructor Philip Hagen   %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[12pt]{article}
+
+% Language and font encoding
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{rotating}
+\usepackage{setspace}
+\usepackage{indentfirst}
+\usepackage{enumitem}
+\usepackage{appendix}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{listings}
+\usepackage{gensymb}
+\usepackage{amssymb}
+\usepackage[final]{pdfpages}
+
+% Sets page size and margins
+\usepackage[a4paper, margin=1in]{geometry}
+
+%Line Spacing
+\setstretch{1.5}
+
+%-------------------Begin Editing Here---------------------
+%Info for Title Page
+\title{Step and Impulse Response of a RLC Band Pass Filter}
+\author{Cameron Williams\\ECE 351-51\\Lab Report 5}
+\date{25 February 2020}
+\begin{document}
+
+%Make a Title Page
+\vspace{\fill}
+\maketitle
+\vspace{\fill}
+\clearpage
+
+\newpage
+%Introduction
+\section{Introduction}
+    \par The objective of this lab is to use Laplace transforms to find the time-domain step and impulse responses of an RLC bandpass filter (pictured below).
+    
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[width=\textwidth]{include/prelab_Figure_1.png}
+    \end{figure}
+\newpage
+
+%Methodology
+\section{Methodology}
+    \par Before attending the lab session, I completed the requisite prelab assignment. However, I did not complete the calculation correctly so the corrected calculation may be seen in the first series of calculations of the Calculations section. Using the transfer function calculated, I plotted the step response by creating a function called sine\_method() that solves for the transfer function of the RLC circuit symbolically. The function takes inputs for R, L, and C. I plotted the function by passing the defined R, L, and C values provided in the prelab to the sine\_method function. For comparison, I also plotted the impulse response using the scipy.signal.impulse() function. This function takes two arrays of coefficients as input -- one for the polynomial in the numerator and one in the denominator as well as an array for the times to calculate at. The plots of the manually calculated impulse response and the scipy.signal.impulse() may be seen in Figure 1 of the Results section.
+    \par Next, I found the step response of the RLC circuit by using the scipy.signal.step() function. Similar to the impulse function from the same library, it takes two arrays of polynomial coefficients and an array for times to perform the calculation at as inputs. A plot of the step response may be seen in Figure 2 of the Results section.
+    \par Finally, I used the Final Value Theorem on the transfer function that I calculated. The calculation may be seen in the Calculations section titled "Final Value Theroem calculation". The Final Value Theorem resulted in a value of 0. This agrees with the plots since the result converges to 0 as time goes on.
+
+\newpage
+%Calculations
+\section{Calculations}
+Transfer function calculations:
+\begin{align*}
+H(s) &= \frac{V_{out}}{V_{in}} \\
+&= \frac{L||C}{R + L||C} \\
+L||C &= \frac{1}{\frac{1}{sL}+\frac{1}{\frac{1}{sC}}} \\
+&= \frac{1}{\frac{1}{sL} + sC} \\
+&= \frac{(\frac{1}{C})*s}{s^2 + \frac{1}{LC}} \\
+H(s) &= \frac{\frac{(\frac{1}{C})*s}{s^2 + \frac{1}{LC}}}{R + \frac{(\frac{1}{C})*s}{s^2 + \frac{1}{LC}}} \\
+&= \frac{\frac{1}{RC}*s}{s^2 + \frac{1}{RC}*s + \frac{1}{LC}} \\
+p &= \frac{\frac{1}{RC}+\sqrt{\frac{1}{RC}^2 - 4(\frac{1}{LC})}}{2} \\
+p &= \alpha + j\omega \\
+g &= \left \frac{1}{RC}*s \right|_{s=p} \\
+&= \left(\frac{-1}{2}\right) \left( \frac{1}{RC} \right)^2 + \left[ \left( \frac{1}{2RC} \right) \sqrt{ \left( \frac{1}{RC} \right) ^2 - 4 \left( \frac{1}{\sqrt{LC}} \right) ^2} \right]^2 \\
+g\angle &= \arctan{ \frac{\sqrt{ \frac{1}{2RC} \sqrt{\frac{1}{2RC}^2}  - 4 \left( \frac{1}{\sqrt{LC}} \right)^2 } } {-\frac{1}{2} \left( \frac{1}{RC} \right) ^2} } \\
+y_s(t) &= \frac{|g|}{\omega}e^{\alpha t}sin(\omega t + \angle g)u(t)
+\end{align*}
+
+Final Value Theorem calculation:
+\begin{align*}
+\lim_{t\to\infty} \left( f(t) \right) \xrightarrow{} \lim_{s\to\infty} \left( s * F(s) \right) &= \lim_{s\to\infty} \left( \frac{\frac{1}{RC}*s^2}{s^2 + \frac{1}{RC}*s + \frac{1}{LC}} \right) \\
+&= \left( \frac{0}{0 + 0 + \frac{1}{LC}} \right) \\
+&= \frac{0}{\frac{1}{LC}} \\
+&= 0
+\end{align*}
+
+\newpage
+%Results
+\section{Results}
+    \begin{figure}[hbt!]
+        \centering
+        \includegraphics[width=\textwidth]{include/Figure_1.png}
+        \caption{Impulse responses of the RLC circuit: hand-calculated then plotted (top) and found using scipy.signal.impulse() function then plotted (bottom).}
+    \end{figure}
+    
+    \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth]{include/Figure_2.png}
+        \caption{Plot of the step response of the RLC circuit found using the scipy.signal.step() function.}
+    \end{figure}
+    
+\newpage
+%Questions
+\section*{Questions}
+
+\begin{enumerate}
+    \item Explain the result of the FInal Value Theorem from Part 2 Task 2 in terms of the physical circuit components.
+\end{enumerate}
+    \par There are no active components, only passive components (resistor, inductor, and capacitor), so it makes sense that an applied impulse would eventually converge to zero as time went on.
+    
+\begin{enumerate}[continue]
+    \item Leave any feedback on the clarity of lab tasks, expectations, and deliverables.
+\end{enumerate}
+    \par The expectations and deliverables for this lab were expressed clearly.
+    
+\end{document}
