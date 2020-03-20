@@ -1,0 +1,174 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Cameron Williams          %
+% ECE 351-51                %
+% Lab Number 7              %
+% 10 March 2020             %
+% Instructor Philip Hagen   %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[12pt]{article}
+
+% Language and font encoding
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{rotating}
+\usepackage{setspace}
+\usepackage{indentfirst}
+\usepackage{enumitem}
+\usepackage{appendix}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{listings}
+\usepackage{gensymb}
+\usepackage{amssymb}
+\usepackage[final]{pdfpages}
+
+% Sets page size and margins
+\usepackage[a4paper, margin=1in]{geometry}
+
+%Line Spacing
+\setstretch{1.5}
+
+%-------------------Begin Editing Here---------------------
+%Info for Title Page
+\title{Block Diagrams and System Stability}
+\author{Cameron Williams\\ECE 351-51\\Lab Report 7}
+\date{10 March 2020}
+\begin{document}
+
+%Make a Title Page
+\vspace{\fill}
+\maketitle
+\vspace{\fill}
+\clearpage
+
+\newpage
+%Introduction
+\section{Introduction}
+    \par The objective of this lab was to practice analyzing Laplace-domain block diagrams using Python to determine system stability. For the purposes of this lab, the following block diagram and equations will be used.
+    \newline
+    \begin{center}
+    \includegraphics{include/block_fig.png}
+    \includegraphics{include/eq_fig.png}
+    \end{center}
+    
+\newpage
+
+%Methodology
+\section{Methodology}
+    \par I began by factoring the provided equations G(s), A(s), and B(s). The factored form of each of these equations may be seen in equations (1), (2), and (3) of the results section respectively. From the factored equations, it is apparent that: G(s) has a root at -9 and poles at 8, -2, and -4; A(s) has a root at -4 and poles at -1 and -3; and B(s) has roots at -14 and -12 (no poles). I used the scipy.signal.tfzpk() function on G(s) and A(s) to confirm the roots and poles I found for them. I also used numpy.roots() to confirm the roots that I found for B(s). I printed the results of these functions in the Python console, which resulted in the following:
+    \begin{verbatim}
+    G(s) has 
+    zeroes: [-9.]
+    poles: [ 8. -4. -2.]
+
+    A(s) has 
+    zeroes: [-4.]
+    poles: [-3. -1.]
+
+    B(s) has 
+    zeroes: [-14. -12.]
+    \end{verbatim}
+    
+    \par Using the factored form of A(s) and G(s), I determined the open-loop response of the system described in the block diagram. The equation describing the open-loop response may be seen in equation (4) of the results section. The open-loop response is not stable because it has a positive pole. A plot of the open-loop step response may be seen in Figure 1 of the results section. I plotted this by first using the scipy.signal.convolve() to find the numerator and denominator of the open-loop step response then using the scipy.signal.step() function to find the step response. The plot agrees with my previous observation of instability since the plot diverges to infinity.
+    \par Next, I determined the closed-loop response of the system. The symbolic equation for the closed-loop response may be seen in equation (5) of the Results section. Using the symbolic equation and the scipy.signal.convolve() function, I determined the numerator and denominator of the closed-loop response. I then used the closed-loop numerator and denominator in the scipy.signal.tf2zpk() function to determine the roots and poles of the closed-loop response. I once again printed the results in the Python console and found the following: 
+    \begin{verbatim}
+    Closed Loop has 
+    zeroes: [-9. -4.]
+    poles: [-5.16237064+9.51798197j -5.16237064-9.51798197j -6.17525872+0.j
+    -3.        +0.j         -1.        +0.j        ]
+    \end{verbatim}
+    Unlike the open-loop response, the closed-loop response has no positive poles and is this stable. A plot of the closed-loop step response may be seen in Figure 2 of the Results section. The plot agrees with my analysis of stability because it converges.
+    
+\newpage
+%Results
+\section{Results}
+\begin{equation}
+\begin{split}
+G(s) = \frac{(s+9)}{(s-8)(s+2)(s+4)}
+\end{split}
+\end{equation}
+Factored form of provided equation G(s). It is apparent that it has root -9 and poles 8, -2, and -4.
+
+\begin{equation}
+\begin{split}
+A(s) = \frac{(s+4)}{(s+1)(s+3)}
+\end{split}
+\end{equation}
+Factored form of provided equation A(s). It is apparent that it has root -4 and poles -3 and -1.
+
+\begin{equation}
+\begin{split}
+B(s) = (s+14)(s+12)
+\end{split}
+\end{equation}
+Factored form of provided equation B(s). It is apparent that it has roots -14 and -12.
+
+\begin{equation}
+\begin{split}
+Y(s) = \frac{X(s)(s+4)(s+9)}{(s-8)(s+2)(s+4)(s+1)(s+3)}
+\end{split}
+\end{equation}
+Open-loop transfer function of the system described by the block diagram provided.
+
+\begin{equation}
+\begin{split}
+H(s) = \frac{(A_{num})(G_{num})}{( (G_{den}) + (B_{num})(G_{num}))A_{den}}
+\end{split}
+\end{equation}
+Symbolic description of the closed-loop transfer function of the system described by the block diagram provided.
+
+    \begin{figure}[hbt!]
+        \centering
+        \includegraphics[scale=.5]{include/Figure_1.png}
+        \caption{}
+    \end{figure}
+    
+    \begin{figure}[hbt!]
+        \centering
+        \includegraphics[scale=.5]{include/Figure_2.png}
+        \caption{}
+    \end{figure}
+    
+\newpage
+%Conclusion
+\section*{Conclusion}
+\par The scipy.signal.convolve() and scipy.signal.tf2zpik() functions are incredibly useful for processing and analyzing block diagrams and their component equations. With proper use, they can be used to analyze systems that would be infeasible or incredibly cumbersome to analyze by hand.
+
+
+\newpage
+%Questions
+\section*{Questions}
+
+\begin{enumerate}
+    \item In Part 1 Task 5, why does convolving the factored terms using scipy.signal.convolve() result in the expanded form of the numerator and denominator?  Would this work with your user-defined convolution function from Lab 3? Why or why not?
+\end{enumerate}
+    \par Using scipy.signal.convolve() in this context results in the expanded form of the numerator and denominator because this is the default behavior of the function in this context. In contrast to this, the user-defined convolution created in Lab 3 is programmed to only output an array of sums of the convolution at each inputted x-value of the time array provided.
+    
+\begin{enumerate}[resume]
+    \item Discuss the difference between the open- and closed-loop systems from Part 1 and Part 2. How does stability differ for each case, and why?
+\end{enumerate}
+    \par As noted before, the open-loop system has a positive pole and is thus unstable whereas the closed-loop system does not have a positive pole and is thus stable. The instability caused by the positive pole in the open-loop system is eliminated by the negative feedback loop present in the closed-loop system.
+    
+\begin{enumerate}[resume]
+    \item  What is the difference between scipy.signal.residue() used in Lab 6 and scipy.signal.tf2zpk() used in this lab?
+\end{enumerate}
+    \par While the residue and tf2zpk produce similar results, tf2zpk is designed to work for linear problems (such as the one provided) whereas residue can be used to compute the partial fraction expansion of non-linear systems. tf2zpk stands for transfer function to Z, P, and K and is named as such because it accepts a transfer function as input and outputs the transfer function's zeroes, poles, and gain. I surmise that using tf2zpk is probably more efficient computationally since the problem domain it addresses is smaller (linear vs. non-linear calculations).
+    
+\begin{enumerate}[resume]
+    \item  Is it possible for an open-loop system to be stable?  What about for a closed-loop system to be unstable?  Explain how or how not for each.
+\end{enumerate}
+    \par It is possible for an open-loop system to be stable. In this case, the open-loop system would have been stable if the G(s) equation simply did not have the (s-8) term in the denominator. Similarly, not all closed-loop systems are stable. The instability causing (s-8) term just as easily could have been present in the A(s) part of the system in which case the closed-loop system would have been unstable just as the open-loop system was.
+    
+\begin{enumerate}[resume]
+    \item Leave any feedback on the clarity/usefulness of the purpose, deliverables, and expectations for this lab.
+\end{enumerate}
+    \par The purpose, deliverables, and expectations for this lab were communicated clearly.
+
+\end{document}
