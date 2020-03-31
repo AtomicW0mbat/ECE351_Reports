@@ -1,0 +1,118 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Cameron Williams          %
+% ECE 351-51                %
+% Lab Number 8              %
+% 24 March 2020             %
+% Instructor Philip Hagen   %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[12pt]{article}
+
+% Language and font encoding
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{rotating}
+\usepackage{setspace}
+\usepackage{indentfirst}
+\usepackage{enumitem}
+\usepackage{appendix}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{listings}
+\usepackage{gensymb}
+\usepackage{amssymb}
+\usepackage[final]{pdfpages}
+
+% Sets page size and margins
+\usepackage[a4paper, margin=1in]{geometry}
+
+%Line Spacing
+\setstretch{1.5}
+
+%-------------------Begin Editing Here---------------------
+%Info for Title Page
+\title{Fourier Series Approximation of a Square Wave}
+\author{Cameron Williams\\ECE 351-51\\Lab Report 8}
+\date{24 March 2020}
+\begin{document}
+
+%Make a Title Page
+\vspace{\fill}
+\maketitle
+\vspace{\fill}
+\clearpage
+
+\newpage
+%Introduction
+\section{Introduction}
+    \par The objective of this lab was to use Fourier series to approximate periodic time-domain signals. For the purposes of this lab, the square wave function pictured below was used.
+    \newline
+    \begin{center}
+    \includegraphics{include/x_t.png}
+    \end{center}
+    
+\newpage
+
+%Methodology
+\section{Methodology}
+    \par The simplified a\_k and b\_k values for the Fourier series approximation may be seen in the Equations section. I implemented them as functions in my Python script and used them to print out the first two values of a\_k, a\_0 and a\_1. I also printed out the values of b\_1, b\_2, and b\_3. These values may be seen in the Appendix. Next, I implemented a summation of the Fourier series in my Python script and plotted the it for values N = 1, N = 3, N = 15, N = 50, N = 150, and N = 1500. These plots may be seen in the Results section.
+    
+%Equations
+\section{Equations}
+    $$ a_k = 0 $$
+    $$ b_k = \frac{2}{k\pi}[1 - cos(k\pi)] $$
+    
+\newpage
+%Results
+\section*{Results}
+\begin{center}
+    \includegraphics[scale=0.7]{include/Figure_1.png}
+    \includegraphics[scale=0.7]{include/Figure_2.png}
+\end{center}
+
+\newpage
+%Questions
+\section*{Questions}
+
+\begin{enumerate}
+    \item Is x(t) an even or an odd function? Explain why.
+\end{enumerate}
+    \par The function is odd since it is not mirrored across the y-axis ($X_n = -X_{-n}$).
+    
+\begin{enumerate}[resume]
+    \item Based on your results from Task 1, what do you expect the values of $a_2$, $a_3$, ..., $a_n$ to be? Why?
+\end{enumerate}
+    \par I expect all values of $a_k$ to be 0 because that's what the equation for $a_k$ simplifies to.
+    
+\begin{enumerate}[resume]
+    \item How does the approximation of the square wave change as the value of N increases? In what way does the Fourier series struggle to approximate the square wave?
+\end{enumerate}
+    \par The approximation gets closer and closer to the square wave as N increases. The Fourier series struggles to approximate the square wave at the straight vertical edges.
+    
+\begin{enumerate}[resume]
+    \item What is occurring mathematically in the Fourier series summation as the value of N increases?
+\end{enumerate}
+    \par As the value of N increases, each new component gets smaller and smaller, but pushes the total x(t) ever closer to resembling the waveform being approximated.
+    
+\begin{enumerate}[resume]
+    \item Leave any feedback on the clarity/usefulness of the purpose, deliverables, and expectations for this lab.
+\end{enumerate}
+    \par The purpose, deliverables, and expectations for this lab were communicated clearly.
+
+\newpage
+%Appendix
+\section*{Appendix}
+
+Python output of requested a\_k and b\_k values:
+\begin{verbatim}
+a_0 = 0, a_1 = 0
+b_1 = 1.2732395447351628, b_2 = 0.0, b_3 = 0.4244131815783876
+\end{verbatim}
+
+\end{document}
