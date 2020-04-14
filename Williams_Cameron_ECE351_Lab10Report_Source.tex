@@ -1,0 +1,125 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Cameron Williams          %
+% ECE 351-51                %
+% Lab Number 10              %
+% 14 April 2020              %
+% Instructor Philip Hagen   %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[12pt]{article}
+
+% Language and font encoding
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{rotating}
+\usepackage{setspace}
+\usepackage{indentfirst}
+\usepackage{enumitem}
+\usepackage{appendix}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{listings}
+\usepackage{gensymb}
+\usepackage{amssymb}
+\usepackage[final]{pdfpages}
+
+% Sets page size and margins
+\usepackage[a4paper, margin=1in]{geometry}
+
+%Line Spacing
+\setstretch{1.5}
+
+%-------------------Begin Editing Here---------------------
+%Info for Title Page
+\title{Frequency Response}
+\author{Cameron Williams\\ECE 351-51\\Lab Report 10}
+\date{14 April 2020}
+\begin{document}
+
+%Make a Title Page
+\vspace{\fill}
+\maketitle
+\vspace{\fill}
+\clearpage
+
+\newpage
+%Introduction
+\section{Introduction}
+    \par The objective of this lab was to become familiar with frequency response tools and Bode plots using Python.
+
+%Methodology
+\section{Methodology}
+    \begin{figure}[H]
+    \centering
+    \includegraphics{include/problem.png}
+    \end{figure}
+    \par I started this lab by creating a Python function called H\_out for determining the magnitude (in dB) and phase shift (in degrees) of an input frequency for the transfer function provided. I used the matplotlib.pyplot.semilogx() function to create a bode plot of the output values. The Bode plot may be seen in Figure 1 of the Results section. Next, I used the scipy.signal.bode() function to verify the results of my manually created bode plot. This plot may be seen in Figure 2 of the Results section. This plot showed that there was a problem with the phase shift displayed by the plot in Task 1. In particular, there were values that were phase shifted by 90 degrees or more that I corrected by shifting them down to match the plot in Task 2. Note that the included plot for task 1 is the one that has been fixed. For the final task of Part 1, I used the control package to recreate the plot from Task 2 with the frequency displayed in Hertz. This new plot may be seen in Figure 3 of the Results section.
+    \par For the next part, I started by plotting $ x(t) = cos(2\pi 100t) + cos(2\pi 3024t) + sin(2\pi 50000t) $ between 0 and 0.01 seconds. I set the sampling frequency to 100000 in order to accurately sample all frequencies that make up x(t). A plot of x(t) may be seen in Figure 4 of the Results section. Finally, I used the function scipy.signal.bilinear() to convert the x(t) signal to the z-domain and passed this new function, X(z), through the scipy.signal.lfilter() function to create the output y(t). A plot of y(t) may be seen in Figure 5 of the Results section.
+    
+\newpage
+%Results
+\section*{Results}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.45]{include/Figure_1.png}
+\caption{Part 1 Task 1 Plot.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.45]{include/Figure_2.png}
+\caption{Part 1 Task 2 Plot.}
+\end{figure}
+
+\newpage
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.45]{include/Figure_3.png}
+\caption{Part 1 Task 3 Plot.}
+\end{figure}
+
+\newpage
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.45]{include/Figure_4.png}
+\caption{Part 2 Task 1 Plot.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.45]{include/Figure_5.png}
+\caption{Part 2 Task 2 Plot.}
+\end{figure}
+
+\newpage
+%Questions
+\section*{Questions}
+
+\begin{enumerate}
+    \item Explain how the filtered output in Part 2 makes sense given the Bode plots from Part 1. Discuss how the filter modifies specific frequency bands, in Hz.
+\end{enumerate}
+    \par There are three frequencies present in x(t): 100 rad/s, 3024 rad/s, and 50000 rad/s. In the Bode plots in Part 1, 100 rad/s and 50000 rad/s are both attenuated by more than 90\% while 100 rad/s is attenuated by less than 30\%, so the 100 rad/s component is clearly visible in the filtered output y(t).
+    
+\begin{enumerate}[resume]
+    \item Discuss the purpose and workings of scipy.signal.bilinear() and scipy.signal.lfilter().
+\end{enumerate}
+    \par As the lab handout implies, the bilinear function is used to transform a time-domain signal into a z-domain signal. Like many of the other functions we've used from the scipy.signal library, the inputs are the numerator and denominator arrays of coefficients of the s terms of the transfer function, though the sampling frequency is also passed as an argument. The scipy.signal.lfilter() function takes a pair of z-domain numerator and denominator arrays representing the transfer function of the filter in question as well as an input signal in order to produce the numerator and denominator for the output signal.
+    
+\begin{enumerate}[resume]
+    \item What happens if you use a different sampling frequency in scipy.signal.bilinear() rather than what you used for the time domain signal?
+\end{enumerate}
+    \par If a smaller sampling frequency is used in the bilinear function call than what was used on the time domain signal, the outputted magnitudes are all smaller than normal. With a larger sampling frequency is used, the outputted magnitudes are larger than normal.
+    
+\begin{enumerate}[resume]
+    \item Leave any feedback on the clarity/usefulness of the purpose, deliverables, and expectations for this lab.
+\end{enumerate}
+    \par The expectations for this lab were expressed clearly in the lab handout.
+
+\end{document}
