@@ -1,0 +1,169 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Cameron Williams          %
+% ECE 351-51                %
+% Lab Number 12             %
+% 5 May 2020                %
+% Instructor Philip Hagen   %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[12pt]{article}
+
+% Language and font encoding
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{rotating}
+\usepackage{setspace}
+\usepackage{indentfirst}
+\usepackage{enumitem}
+\usepackage{appendix}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{listings}
+\usepackage{gensymb}
+\usepackage{amssymb}
+\usepackage[final]{pdfpages}
+
+% Sets page size and margins
+\usepackage[a4paper, margin=1in]{geometry}
+
+%Line Spacing
+\setstretch{1.5}
+
+%-------------------Begin Editing Here---------------------
+%Info for Title Page
+\title{Filter Design}
+\author{Cameron Williams\\ECE 351-51\\Lab Report 12}
+\date{5 May 2020}
+\begin{document}
+
+%Make a Title Page
+\vspace{\fill}
+\maketitle
+\vspace{\fill}
+\clearpage
+
+\newpage
+%Introduction
+\section{Introduction}
+    \par The objective of this project was to design a filter based on a provided input signal and a few specified constraints as to what components of the signal should be filtered out. 
+
+%Methodology
+\section{Methodology}
+    \par I began by implementing the provided starting code for importing the data from the provided CSV file into the Python environment and creating a plot of the raw data. The plot of the unprocessed signal may be seen in Figure 1 of the Results section. The first task was to identify the magnitudes and frequencies of noise corresponding to the low frequency vibration and the switching amplifier. In the problem outline provided its stated that - in addition to a range of unknown, smaller noise sources - one known source of noise is low frequency vibrations from a nearby building and the other is a high frequency source of noise originating from a switching amplifier nearby the sensor used to generate the desired data. The positioning sensor produces the signal that we are interested in preserving between 1.8 kHz and 2.0 kHz.
+    
+    \par To uncover the frequency content of the data, I ran it through the fft\_clean() function I created as part of Lab 9 and used the make\_stem() function provided with the problem outline to create a series of stem plots based on the results of the Fourier transform. In order to see the whole range of frequencies, I plotted the results of the Fourier transform four times on different scales - once with the whole range visible, once with the very low frequencies visible, once with the middle frequencies visible, and once with the high frequencies visible. These plots may be seen in Figure 2 of the Results section. At this point, the range of frequencies around which the low frequency and high frequency noise sources resided was pretty clear, but I created a loop to iterate through the results and print frequencies above a threshold magnitude (I somewhat arbitrarily selected 0.4 as the threshold based on what I saw in the plots). The printout may be seen in Listing 1 of the results section. The printout makes it clear that the known low frequency noise source (the building's ventilation system) has a magnitude of 0.75 at a frequency of 60 Hz and that the known high frequency noise source (the switching amplifier) has magnitudes between 0.5 and 0.75 on frequencies between 49.9 kHz and 51 kHz. The position sensor produces a signal ranging from magnitude 0.5 to 1.26 on frequencies on the 1.8kHz - 2.0kHz band.
+    
+    \par With the noise sources and desired signal thoroughly characterized, the next task was to design a filter. For the purposes of this task, the following stipulations were made:
+    \begin{itemize}
+        \item The position measurement information is attenuated by less than -0.3dB
+        \item The low-frequency vibration noise must be attenuated by at least -30dB
+        \item The switching amplifier noise must be attenuated by at least -21dB
+        \item All noise that exists at frequencies greater than 100kHz must be completely attenuated(magnitudes less than 0.05V can be considered completely attenuated for all practical purposes in this situation)
+    \end{itemize}
+    In order to address these requirements, I began by creating a two stage filter in which one stage was a low-pass RC filter and the other a high-pass RC filter. I wanted to avoid using inductors as I have been taught that they are generally larger and more expensive than capacitors. It quickly became clear that a single pole for each stage would not allow me to address all of the requirements, so I expanded on my solution incorporating a series of design equations into my Python script that would quickly and easily allow me to change the upper and lower corner frequencies, resistor value, low-pass stage capacitor value, high-pass stage capacitor value, and total number of poles in the low-pass and high-pass stages of the filter. By iteratively adjusting values and checking the results, I arrived on my final design of an 8-pole (4 poles for the low-pass stage, 4 poles for the high-pass stage) RC filter that meets all specified requirements and should be relatively easy to construct. The circuit schematic may be seen in Figure 3 of the Results section. The low-pass stage uses four C1=800pF capacitors and the high-pass stage uses four C2=100nF while both stages use four R=10e3\ohm resistors. Note that I rounded the capacitor values calculated from my script, which were C1=7.95774e-10 and C2=1.06103e-7. The transfer function of may be seen below.
+    $$ H_{out} = \frac{C_2^4 R^4 s^4}{(C_2 R s + 1)^4 (C_1 R s + 1)^4} $$
+    
+    \par To demonstrate that my filter works as intended, I created a Bode plot for it. The Bode plot may be seen in Figure 4 of the Results section. I also printed out the attenuation of the frequencies I was particularly interested in to ensure that they were handled properly. A Python printout of these frequencies and their attenuation may be seen in Listing 2 of the Results section. It verifies that my filter meets all the specifications. Finally, I used the scipy.signal.bilinear() and scipy.signal.filter() functions to apply the noisy input signal to the filter I designed. A plot of the output may be seen in Figure 5 of the Results section. I also ran this output through a Fourier transform and made a stem plot like before. This may be seen in Figure 6 of the Results section.
+
+%Methodology
+\section{Conclusion}
+    I successfully addressed the specifications of the design as I understood them. However, one shortcoming of my design is its relative size. It seemed a little ridiculous chaining together all these basic RC filters to meet the specifications and I expect an active filter would make for a much more elegant design.
+    
+\newpage
+%Results
+\section*{Results}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{include/Figure 1.png}
+\caption{Provided noisy input signal for use throughout this project.}
+\end{figure}
+
+\begin{verbatim}
+            Magnitude 0.7496666185784067 at frequency 60.0
+            Magnitude 1.2615337867316183 at frequency 1800.0
+            Magnitude 0.7401580641488451 at frequency 1840.0
+            Magnitude 0.5330534248873581 at frequency 1880.0
+            Magnitude 0.9062540457441298 at frequency 1900.0
+            Magnitude 0.7662798197140137 at frequency 1920.0
+            Magnitude 0.5138968975969327 at frequency 1940.0
+            Magnitude 1.0024033869343267 at frequency 2000.0
+            Magnitude 0.6257929347905017 at frequency 49900.0
+            Magnitude 0.7507926756888817 at frequency 50000.0
+            Magnitude 0.5007934476470135 at frequency 51000.0
+\end{verbatim}
+\begin{center}
+Listing 1 - Python printout of frequencies from raw data with greater than 0.4 magnitude.
+\end{center}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.70]{include/Figure 2.png}
+\caption{Stem plots created using Fourier transform of the noisy input signal.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.50]{include/Figure 6.png}
+    \caption{Schematic of filter designed for this project. Note that the capacitor values have been rounded from the actual values calculated using my Python script.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics{include/Figure 3_1.png}
+\caption{Bode plot of the transfer function for the filter I designed. The first red line shows clearly that the low frequency noise is attenuated by a little over -30dB and the second red line shows that the high frequency noise is attenuated by a little over -30dB as well. At 100kHz, it's clear that the attenuation is greater than -50dB, so it is clear that frequencies equal to or greater than 100kHz are completely attenuated. Finally, the band between the green bars represents the band from the sensor and experiences virtually no attenuation.}
+\end{figure}
+
+\begin{verbatim}
+                60 Hz attenuated by -34.41 dB
+                1800 Hz attenuated by -0.26 dB
+                1900 Hz attenuated by -0.26 dB
+                2000 Hz attenuated by -0.27 dB
+                49900 Hz attenuated by -34.35 dB
+                50000 Hz attenuated by -34.41 dB
+                51000 Hz attenuated by -35.01 dB
+                100000 Hz attenuated by -56.60 dB
+\end{verbatim}
+\begin{center}
+Listing 2 - Python print out of frequencies that I was interested in double checking attenuation requirements.
+\end{center}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{include/Figure 4.png}
+\caption{Output from the designed filter when the noisy input signal is applied.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{include/Figure 5.png}
+\caption{Stem plots created using Fourier transform of the filtered output signal. As intended, the only components left are in the 1.8kHz-2.0kHz frequency band.}
+\end{figure}
+
+
+\newpage
+%Questions
+\section*{Questions}
+
+\begin{enumerate}
+    \item Earlier this semester, you were asked what you personally wanted to get out of taking this course. Do you feel like that personal goal was met?  Why or why not?
+\end{enumerate}
+    \par 
+    
+\begin{enumerate}[resume]
+    \item Please fill out the course feedback survey, I will read every word and very much appreciate the feedback.
+\end{enumerate}
+    \par I will complete the feedback survey as soon as I can.
+
+\begin{enumerate}
+    \item Good luck in the rest of your education and career!
+\end{enumerate}
+    \par Thank you!
+
+\end{document}
